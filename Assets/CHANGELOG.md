@@ -17,3 +17,6 @@
 #Changelog 0.0.2-devstage
     - Added Wall Ability
         - with Collision & Rigidbody
+
+#Changelog 0.0.3-devstage
+    - Walls now allways spawn at y level 0
