@@ -13,3 +13,7 @@
     - Edited Player
         - Jumping (with Physics. Only jumpable if object is on "Ground" Layer)
         - Crouching (Smooth, from AI)
+
+#Changelog 0.0.2-devstage
+    - Added Wall Ability
+        - with Collision & Rigidbody
