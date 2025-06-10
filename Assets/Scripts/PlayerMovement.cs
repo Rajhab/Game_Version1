@@ -5,7 +5,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private InputSystem_Actions playerControls;
     private Rigidbody rb;
-    private CapsuleCollider playerCollider;
+    private BoxCollider playerCollider;
 
     private float rotationX = 0f;
     private float rotationY = 0f;
@@ -59,16 +59,15 @@ public class PlayerMovement : MonoBehaviour
         Cursor.visible = false;
 
         playerControls = new InputSystem_Actions();
-        playerCollider = GetComponent<CapsuleCollider>();
-        if (playerCollider == null) // Ensure CapsuleCollider is present and configured
-        {
-            Debug.LogError("CapsuleCollider component not found on this GameObject. Crouching requires a CapsuleCollider. Adding one now.");
-            playerCollider = gameObject.AddComponent<CapsuleCollider>();
-        }
-        // Initialize collider with stand height to match initial state
-        playerCollider.height = standHeight;
-        playerCollider.center = new Vector3(playerCollider.center.x, standHeight / 2f, playerCollider.center.z); // Added 'f'
-        playerCollider.radius = 0.4f; // A sensible default radius
+        playerCollider = GetComponent<BoxCollider>();
+
+        Vector3 colliderSize = playerCollider.size;
+        colliderSize.y = standHeight;
+        playerCollider.size = colliderSize;
+
+        Vector3 colliderCenter = playerCollider.center;
+        colliderCenter.y = standHeight / 2f;
+        playerCollider.center = colliderCenter;
 
         playerControls.Player.Move.performed += OnMovePerformed;
         playerControls.Player.Move.canceled += OnMoveCanceled;
@@ -108,14 +107,17 @@ public class PlayerMovement : MonoBehaviour
         transform.position += moveDirection * currentMoveSpeed * Time.deltaTime;
 
         float targetColliderHeight = isCrouchingTarget ? crouchHeight : standHeight;
-        float targetColliderCenterY = isCrouchingTarget ? crouchHeight / 2f : standHeight / 2f; // Use 'f' for float literal
+        float targetColliderCenterY = targetColliderHeight / 2f;
 
         if (playerCollider != null)
         {
-            // Smoothly adjust collider height using its own velocity variable
-            playerCollider.height = Mathf.SmoothDamp(playerCollider.height, targetColliderHeight, ref currentHeightVelocity, crouchSmoothTime);
-            // Smoothly adjust collider center Y using its own velocity variable
-            playerCollider.center = new Vector3(playerCollider.center.x, Mathf.SmoothDamp(playerCollider.center.y, targetColliderCenterY, ref currentCenterYVelocity, crouchSmoothTime), playerCollider.center.z);
+            Vector3 size = playerCollider.size;
+            size.y = Mathf.SmoothDamp(size.y, targetColliderHeight, ref currentHeightVelocity, crouchSmoothTime);
+            playerCollider.size = size;
+
+            Vector3 center = playerCollider.center;
+            center.y = Mathf.SmoothDamp(center.y, targetColliderCenterY, ref currentCenterYVelocity, crouchSmoothTime);
+            playerCollider.center = center;
         }
 
         float targetCameraY = isCrouchingTarget ? cameraCrouchHeightOffset : cameraStandHeightOffset;
