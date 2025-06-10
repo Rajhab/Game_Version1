@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+//DIESER CODE HAT KEINE FUNKTION MEHR. NUR FÜR TESTZWECKE
+
 public class InputSystem : MonoBehaviour
 {
 
